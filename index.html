@@ -119,7 +119,6 @@
   <div class="hud">
     <div class="group">
       <button class="btn" id="btnControls">Controls</button>
-      <button class="btn" id="btnOpen">Open in new tab</button>
     </div>
     <div class="group">
       <button class="btn" id="btnFullscreen">Fullscreen</button>
@@ -143,8 +142,7 @@
       </div>
 
       <div class="note">
-        If you embed this into Google Sites, saving + fullscreen are most reliable when you use “Embed → URL” (your GitHub Pages link),
-        not “Embed code”. Use “Open in new tab” as a fallback.
+        Tip: Jaeho Lee sold me weed in the Stratford South Parking Lot.
       </div>
     </div>
   </div>
@@ -173,10 +171,10 @@
         <div class="panel">
           <h3>Layout</h3>
           <div style="color:rgba(255,255,255,.78);font-size:13px;line-height:1.5">
-            Screens are forced <b>side-by-side</b>: left = top screen, right = bottom screen.
+            Screens are <b>side-by-side</b>: left = top screen, right = bottom screen.
             They scale to fit your window while preserving pixel aspect ratio.
             <br><br>
-            Tip: click the emulator once so it has keyboard focus.
+            If controls aren't responding, click the emulator once so it has keyboard focus.
           </div>
         </div>
       </div>
@@ -189,9 +187,6 @@
   <script>
     // ====== CONFIG ======
     const ROM_URL = "https://files.catbox.moe/35lx11.nds";
-    // Set this to your GitHub Pages URL once you enable Pages:
-    // https://YOURUSERNAME.github.io/YOURREPO/
-    const STANDALONE_URL = "https://YOURUSERNAME.github.io/YOURREPO/";
     // ====================
 
     const el = (id) => document.getElementById(id);
@@ -201,9 +196,6 @@
     el("btnControls").onclick = () => modalBack.style.display = "block";
     el("btnClose").onclick = () => modalBack.style.display = "none";
     modalBack.addEventListener("click", (e) => { if (e.target === modalBack) modalBack.style.display = "none"; });
-
-    // Open in new tab
-    el("btnOpen").onclick = () => window.open(STANDALONE_URL, "_blank", "noopener,noreferrer");
 
     // Fullscreen
     el("btnFullscreen").onclick = async () => {
