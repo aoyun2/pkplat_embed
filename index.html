@@ -120,9 +120,6 @@
     <div class="group">
       <button class="btn" id="btnControls">Controls</button>
     </div>
-    <div class="group">
-      <button class="btn" id="btnFullscreen">Fullscreen</button>
-    </div>
   </div>
 
   <desmond-player id="player"></desmond-player>
@@ -196,18 +193,6 @@
     el("btnControls").onclick = () => modalBack.style.display = "block";
     el("btnClose").onclick = () => modalBack.style.display = "none";
     modalBack.addEventListener("click", (e) => { if (e.target === modalBack) modalBack.style.display = "none"; });
-
-    // Fullscreen
-    el("btnFullscreen").onclick = async () => {
-      try {
-        const player = el("player");
-        if (document.fullscreenElement) return document.exitFullscreen();
-        await player.requestFullscreen();
-      } catch (e) {
-        alert("Fullscreen may be blocked inside embeds. Try Open in new tab.");
-        console.warn(e);
-      }
-    };
 
     function fmtMB(bytes){ return (bytes/(1024*1024)).toFixed(bytes < 10*1024*1024 ? 1 : 0) + " MB"; }
     function fmtSpeed(bps){
