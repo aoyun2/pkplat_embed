@@ -305,7 +305,6 @@
       const pct = el("pct");
       const dl = el("dl");
       const eta = el("eta");
-      const phase = el("phase");
       const sub = el("sub");
 
       let lastT = performance.now(), lastB = 0, ema = 0;
@@ -328,7 +327,6 @@
         eta.textContent = `${fmtSpeed(ema)} • ETA ${fmtETA(e)}`;
       });
 
-      phase.textContent = "Starting…";
       sub.textContent = "Initializing emulator…";
 
       // feed Desmond a blob URL so it doesn't re-download
