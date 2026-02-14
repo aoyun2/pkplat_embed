@@ -7,6 +7,7 @@ A lightweight wrapper for [desmond](https://github.com/js-emulators/desmond), ad
 - Loads a `.nds` ROM from `?rom=<url>` (ROM hosting must allow cross-origin requests (CORS) for remote URLs).
 - Caches downloaded ROMs in browser storage for faster reloads.
 - Save data with import/export/delete save tools.
+- ROM loading uses retry logic (`fetch` + XHR with cache-busting fallback) for stricter mobile/network behavior.
 
 ## Controls
 
@@ -22,6 +23,15 @@ Keyboard mapping:
 - `Select`: `Shift`
 
 Touch: click/tap the right-hand screen (bottom DS screen).
+
+On phones/tablets (or coarse pointers), on-screen controls are shown automatically:
+
+- D-pad
+- A/B/X/Y
+- L/R
+- Start/Select
+
+In portrait mode, the DS screens stack vertically for a better mobile fit.
 
 ## Saves
 
