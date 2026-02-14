@@ -23,6 +23,8 @@ Keyboard mapping:
 
 Touch: click/tap the right-hand screen (bottom DS screen).
 
+Mobile Support is implemented with touch buttons at the bottom of the page.
+
 ## Saves
 
 - Save files are stored in browser storage and restored on reload.
