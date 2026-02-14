@@ -53,9 +53,10 @@
 
     onProgress(0, totalBytes, "Loading ROM chunks…");
 
-    // Fetch all chunks in parallel
+    // Fetch all chunks in parallel (order doesn't matter — indexed by i)
     const buffers = new Array(chunks);
     let loaded = 0;
+    let done = 0;
 
     await Promise.all(
       Array.from({ length: chunks }, (_, i) => {
@@ -68,7 +69,8 @@
           .then((buf) => {
             buffers[i] = new Uint8Array(buf);
             loaded += buf.byteLength;
-            onProgress(loaded, totalBytes, `Chunk ${i + 1}/${chunks}`);
+            done++;
+            onProgress(loaded, totalBytes, `${done}/${chunks} chunks`);
           });
       })
     );
@@ -109,6 +111,86 @@
     const buf = new Uint8Array(await r.arrayBuffer());
     onProgress(buf.byteLength, buf.byteLength, "Downloaded");
     return buf;
+  }
+
+  // ══════════════════════════════════════
+  // ROM file picker fallback
+  // ══════════════════════════════════════
+  function promptForROM() {
+    return new Promise((resolve) => {
+      // Replace loader content with a drop zone
+      const card = document.querySelector(".loader-card");
+      card.innerHTML = `
+        <div class="loader-title">Select ROM</div>
+        <div id="dropZone" style="
+          border: 2px dashed rgba(255,255,255,.12);
+          border-radius: 10px;
+          padding: 36px 20px;
+          text-align: center;
+          cursor: pointer;
+          transition: border-color .15s, background .15s;
+        ">
+          <div style="font-size:28px; margin-bottom:12px; opacity:.3;">&#128190;</div>
+          <div style="color: rgba(255,255,255,.55); font-size: 11px; line-height: 1.6;">
+            <strong style="color: rgba(255,255,255,.8);">Drop .nds file here</strong><br>
+            or tap to browse
+          </div>
+          <input id="romPicker" type="file" accept=".nds,.bin" hidden />
+        </div>
+        <div class="loader-sub" style="margin-top:14px; text-align:center;">
+          Or deploy with <code style="color:var(--accent);">rom/</code> chunks for auto-loading
+        </div>
+      `;
+
+      const zone = $("dropZone");
+      const input = $("romPicker");
+
+      // Click → open file dialog
+      zone.addEventListener("click", () => input.click());
+
+      // File selected
+      input.addEventListener("change", () => {
+        const f = input.files?.[0];
+        if (f) readFile(f);
+      });
+
+      // Drag styling
+      zone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        zone.style.borderColor = "var(--accent)";
+        zone.style.background = "rgba(79,255,176,.04)";
+      });
+      zone.addEventListener("dragleave", () => {
+        zone.style.borderColor = "rgba(255,255,255,.12)";
+        zone.style.background = "transparent";
+      });
+      zone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        zone.style.borderColor = "rgba(255,255,255,.12)";
+        zone.style.background = "transparent";
+        const f = e.dataTransfer?.files?.[0];
+        if (f) readFile(f);
+      });
+
+      async function readFile(file) {
+        if (file.size < 1024) {
+          alert("File too small to be a valid ROM.");
+          return;
+        }
+        // Restore loader UI
+        card.innerHTML = `
+          <div class="loader-title" id="loaderTitle">Loading</div>
+          <div class="track"><div class="fill" id="bar" style="width:100%"></div></div>
+          <div class="loader-meta">
+            <div><span class="val" id="dl">${fmtMB(file.size)}</span> loaded</div>
+            <div><span class="val" id="pct">100%</span></div>
+          </div>
+          <div class="loader-sub" id="sub">Reading file…</div>
+        `;
+        const buf = new Uint8Array(await file.arrayBuffer());
+        resolve(buf);
+      }
+    });
   }
 
   // ══════════════════════════════════════
@@ -449,9 +531,8 @@
     }
 
     if (!rom) {
-      $("loaderTitle").textContent = "No ROM found";
-      $("sub").textContent = "Add rom/ chunks via split-rom.sh, or use ?rom=<url>";
-      return;
+      rom = await promptForROM();
+      if (!rom) return;
     }
 
     $("bar").style.width = "100%";
