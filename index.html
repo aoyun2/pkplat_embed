@@ -2,98 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>NDS Player</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/app.css" />
 </head>
-
 <body>
-  <div class="hud">
-    <div class="group">
-      <button class="btn" id="btnControls">Controls</button>
-      <button class="btn" id="btnSaveNow" title="Force-save to browser storage now">Save now</button>
-      <button class="btn" id="btnExport" title="Download your save as a .dsv file">Export save</button>
-      <label class="btn" id="btnImport" title="Import a .dsv save file">
-        Import save
-        <input id="importFile" type="file" accept=".dsv" hidden />
-      </label>
+  <!-- HUD -->
+  <div class="hud" id="hud">
+    <div class="L">
+      <button class="hbtn" id="btnControls">Controls</button>
+      <button class="hbtn" id="btnSaves">Saves</button>
     </div>
-
-    <div class="group">
-      <span class="chip" id="saveStatus">Save: …</span>
+    <div class="R">
+      <span class="tag" id="tagSave">save: —</span>
     </div>
   </div>
 
-  <!-- Screens -->
-  <canvas id="top" width="256" height="192"></canvas>
-  <canvas id="bottom" width="256" height="192"></canvas>
+  <!-- Emulator -->
+  <desmond-player id="player"></desmond-player>
 
-  <!-- Loading overlay -->
+  <!-- Loader -->
   <div id="loader">
-    <div class="card">
-      <div class="row">
-        <div class="title" id="loaderTitle">Loading emulator</div>
-        <div class="chip" id="pct">0%</div>
+    <div class="loader-card">
+      <div class="loader-title" id="loaderTitle">Loading</div>
+      <div class="track"><div class="fill" id="bar"></div></div>
+      <div class="loader-meta">
+        <div><span class="val" id="dl">0 MB</span> downloaded</div>
+        <div><span class="val" id="pct">0%</span></div>
       </div>
-      <div class="sub" id="sub">Preparing…</div>
-      <div class="barWrap"><div class="bar" id="bar"></div></div>
-
-      <div class="meta">
-        <div><strong id="dl">0 MB</strong><div>Downloaded</div></div>
-        <div><strong id="eta">—</strong><div>Speed / ETA</div></div>
-      </div>
-
-      <div class="note">
-        Tip: Save in-game. This page auto-stores your save in your browser (and you can export/import a backup).
-      </div>
+      <div class="loader-sub" id="sub">Downloading ROM…</div>
     </div>
   </div>
 
-  <!-- Controls modal -->
-  <div id="modalBack">
-    <div id="modal">
-      <div class="modalHeader">
-        <h2>Controls</h2>
-        <button class="btn" id="btnClose">Close</button>
+  <!-- Unmute overlay -->
+  <div id="unmute">
+    <div class="inner">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
       </div>
+      <div class="label">Tap to enable audio</div>
+    </div>
+  </div>
 
-      <div class="grid">
-        <div class="panel">
-          <h3>Keyboard</h3>
-          <div class="krow"><span>D-Pad</span><code class="k">Arrow keys</code></div>
-          <div class="krow"><span>A</span><code class="k">X</code></div>
-          <div class="krow"><span>B</span><code class="k">Z</code></div>
-          <div class="krow"><span>Y</span><code class="k">A</code></div>
-          <div class="krow"><span>X</span><code class="k">S</code></div>
-          <div class="krow"><span>L</span><code class="k">Q</code></div>
-          <div class="krow"><span>R + Mic blow</span><code class="k">W</code></div>
-          <div class="krow"><span>Start</span><code class="k">Enter</code></div>
-          <div class="krow"><span>Select</span><code class="k">Shift</code></div>
-          <div class="krow"><span>Menu</span><code class="k">Esc</code></div>
+  <!-- Modal -->
+  <div id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">Controls</h2>
+        <button class="close-btn" id="btnClose">ESC</button>
+      </div>
+      <div id="panelControls">
+        <div class="section">
+          <div class="section-label">Keyboard mapping</div>
+          <div class="kv"><span class="label">D-Pad</span><span class="value">↑ ↓ ← →</span></div>
+          <div class="kv"><span class="label">A</span><span class="value">Z</span></div>
+          <div class="kv"><span class="label">B</span><span class="value">X</span></div>
+          <div class="kv"><span class="label">X</span><span class="value">S</span></div>
+          <div class="kv"><span class="label">Y</span><span class="value">A</span></div>
+          <div class="kv"><span class="label">L / R</span><span class="value">Q / W</span></div>
+          <div class="kv"><span class="label">Start</span><span class="value">Enter</span></div>
+          <div class="kv"><span class="label">Select</span><span class="value">Shift</span></div>
         </div>
-        <div class="panel">
-          <h3>Layout</h3>
-          <div style="color:rgba(255,255,255,.78);font-size:13px;line-height:1.5">
-            Screens are <b>side-by-side</b>: left = top screen, right = bottom screen.
-            They scale to fit your window while preserving the DS pixel aspect ratio.
-            <br><br>
-            Click the emulator once so it has keyboard focus.
-            <br><br>
-            Note: Some embedded iframes (like Google Sites) may block persistent storage.
-            If “Save: blocked” shows up, open this page directly or use <b>Export save</b>.
+        <div class="section">
+          <div class="section-label">Touch</div>
+          <div class="info">Click or tap the right-side screen (bottom DS screen) for touch input. Screens display side-by-side: left = top, right = bottom.</div>
+        </div>
+      </div>
+      <div id="panelSaves" style="display:none;">
+        <div class="section">
+          <div class="section-label">Auto-save</div>
+          <div class="info">Battery saves are persisted to IndexedDB automatically whenever the game writes save data. On reload, saves restore before the ROM boots.</div>
+          <div class="actions">
+            <button class="hbtn" id="btnExport">Export .dsv</button>
+            <label class="hbtn" for="importFile" style="cursor:pointer;">Import .dsv</label>
+            <input id="importFile" type="file" accept=".dsv,.sav" hidden />
+            <button class="hbtn red" id="btnClear">Delete save</button>
           </div>
+          <div class="status" id="saveStatus">checking…</div>
+          <div class="status" id="saveKey">key: —</div>
+        </div>
+        <div class="section">
+          <div class="section-label">Embed note</div>
+          <div class="info">If embedded in an iframe (e.g. Google Sites), browser storage may be blocked. Open this page directly in a new tab for reliable saves.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Dependencies -->
-  <script src="js/localforage-1.7.3.min.js"></script>
-
-  <!-- Emulator core (prebuilt DeSmuME-wasm) -->
-  <script src="js/emu-core.js"></script>
-
-  <!-- App -->
-  <script src="js/main.js"></script>
+  <script src="./js/desmond.min.js"></script>
+  <script src="./js/boot.js"></script>
 </body>
 </html>
