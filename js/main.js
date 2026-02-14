@@ -6,7 +6,7 @@ const el = (id) => document.getElementById(id);
 
 // ====== CONFIG ======
 // Option A: hardcode
-const DEFAULT_ROM_URL = ""; // e.g. "https://example.com/mygame.nds"
+const DEFAULT_ROM_URL = "https://files.catbox.moe/35lx11.nds"; // e.g. "https://example.com/mygame.nds"
 // Option B: URL param ?rom=https://...
 // ====================
 
