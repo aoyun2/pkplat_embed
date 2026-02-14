@@ -83,6 +83,17 @@
     const root = $("touchControls");
     if (!root) return;
 
+    const suppressLegacyTouch = (e) => {
+      if (!(e.target instanceof Element)) return;
+      if (!e.target.closest(".touch-btn")) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+    };
+    ["touchstart", "touchmove", "touchend", "touchcancel"].forEach((ev) => {
+      root.addEventListener(ev, suppressLegacyTouch, { capture: true, passive: false });
+    });
+
     const held = new Map();
     const release = (btn, pointerId) => {
       const data = held.get(pointerId);
@@ -136,7 +147,7 @@
   }
 
   // ── Streaming download with progress ──
-  async function fetchROM(url, onProgress) {
+  async function fetchROMViaFetch(url, onProgress) {
     const r = await fetch(url);
     if (!r.ok) throw new Error("HTTP " + r.status);
     const total = Number(r.headers.get("content-length")) || 0;
@@ -161,6 +172,38 @@
     const buf = new Uint8Array(await r.arrayBuffer());
     onProgress(buf.byteLength, buf.byteLength);
     return buf;
+  }
+
+  function fetchROMViaXHR(url, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "arraybuffer";
+
+      xhr.onprogress = (e) => onProgress(e.loaded || 0, e.lengthComputable ? e.total : 0);
+      xhr.onerror = () => reject(new Error("Network error while downloading ROM"));
+      xhr.ontimeout = () => reject(new Error("ROM download timed out"));
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+          const out = new Uint8Array(xhr.response);
+          onProgress(out.byteLength, out.byteLength);
+          resolve(out);
+          return;
+        }
+        reject(new Error("HTTP " + xhr.status));
+      };
+
+      xhr.send();
+    });
+  }
+
+  async function fetchROM(url, onProgress) {
+    try {
+      return await fetchROMViaFetch(url, onProgress);
+    } catch (err) {
+      console.warn("[boot] fetch() ROM download failed, falling back to XHR:", err);
+      return await fetchROMViaXHR(url, onProgress);
+    }
   }
 
   // ── Side-by-side screen layout ──

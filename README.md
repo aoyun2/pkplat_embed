@@ -7,6 +7,7 @@ A lightweight wrapper for [desmond](https://github.com/js-emulators/desmond), ad
 - Loads a `.nds` ROM from `?rom=<url>` (ROM hosting must allow cross-origin requests (CORS) for remote URLs).
 - Caches downloaded ROMs in browser storage for faster reloads.
 - Save data with import/export/delete save tools.
+- ROM loading uses `fetch` with an automatic XHR fallback for browsers with stricter mobile/network behavior.
 
 ## Controls
 
