@@ -3,7 +3,7 @@
   "use strict";
 
   // ═══════════════ CONFIG ═══════════════
-  const DEFAULT_ROM_URL = "https://files.catbox.moe/35lx11.nds";
+  const DEFAULT_ROM_URL = "https://files.catbox.moe/h99cuh.nds";
   // ══════════════════════════════════════
 
   const $ = (id) => document.getElementById(id);
