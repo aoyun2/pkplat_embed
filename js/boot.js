@@ -3,7 +3,8 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
-  const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
+  //const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
+  const isTouchDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   // ══════════════════════════════════════
   // Override desmond's showMsg
