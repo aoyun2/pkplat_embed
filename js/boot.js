@@ -4,7 +4,7 @@
 
   const $ = (id) => document.getElementById(id);
   //const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
-  const isTouchDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isTouchDevice = window.matchMedia("(any-hover:none)").matches;
 
   // ══════════════════════════════════════
   // Override desmond's showMsg
