@@ -116,55 +116,5 @@
 
   <script src="./js/desmond.min.js"></script>
   <script src="./js/boot.js"></script>
-  <script>
-    (function sitesKeyboardFix() {
-      // 1) Create a hidden textarea that can hold focus reliably in iframes
-      const kb = document.createElement("textarea");
-      kb.setAttribute("aria-hidden", "true");
-      kb.setAttribute("autocomplete", "off");
-      kb.setAttribute("autocapitalize", "off");
-      kb.setAttribute("spellcheck", "false");
-
-      Object.assign(kb.style, {
-        position: "fixed",
-        left: "-9999px",
-        top: "0px",
-        width: "1px",
-        height: "1px",
-        opacity: "0",
-        pointerEvents: "none",
-      });
-
-      document.body.appendChild(kb);
-
-      // 2) Focus it on user gesture (this is what Sites needs)
-      function grabFocus() {
-        try { kb.focus({ preventScroll: true }); } catch { kb.focus(); }
-      }
-
-      // Any interaction inside the iframe should grab focus
-      ["pointerdown", "mousedown", "touchstart", "click"].forEach((ev) => {
-        window.addEventListener(ev, grabFocus, { capture: true, passive: true });
-      });
-
-      // Optional: keep focus if user accidentally clicks outside the canvas area
-      window.addEventListener("blur", () => setTimeout(grabFocus, 0));
-
-      // 3) Route keys from the textarea (or from window) into your emulator
-      // Replace `onKeyDown/onKeyUp` with YOUR existing handlers.
-      kb.addEventListener("keydown", (e) => {
-        // prevent arrow keys from scrolling parent pages once focused
-        if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
-        if (typeof window.onKeyDown === "function") window.onKeyDown(e);
-      }, true);
-
-      kb.addEventListener("keyup", (e) => {
-        if (typeof window.onKeyUp === "function") window.onKeyUp(e);
-      }, true);
-
-      // Try to focus once at start (may not stick until first click, but harmless)
-      setTimeout(grabFocus, 0);
-    })();
-  </script>
 </body>
 </html>
